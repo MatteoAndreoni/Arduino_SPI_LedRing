@@ -1,6 +1,11 @@
 // Master
 
+
 #include <SPI.h>
+
+bool handshake = false;
+
+
 
 void setup (void)
 {
@@ -17,11 +22,12 @@ void setup (void)
 
 void loop (void)
 {
+  if(!handshake){
   char buf [20];
 
   digitalWrite(SS, LOW);    
   SPI.transfer ('1');
-  for (int pos = 0; pos < 2; pos++)
+  for (int pos = 0; pos < 3; pos++)
     {
     delayMicroseconds (15);
     buf [pos] = SPI.transfer ('2');
@@ -32,12 +38,12 @@ void loop (void)
     }
 
   digitalWrite(SS, HIGH);
+  handshake = true;
+  Serial.println ("Handshake avvenuto");
 
-  Serial.print ("Received: ");
-  Serial.print (buf[0]);
-  Serial.print (buf[1]);
-  Serial.print (buf[2]);
-  Serial.println("");
+  }
+
+  
 
   delay (1000);
 }
