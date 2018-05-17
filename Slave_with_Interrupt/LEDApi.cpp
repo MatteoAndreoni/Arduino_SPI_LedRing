@@ -12,6 +12,7 @@ void LEDApi::initialize() {
 
   //Serial.println("Prima di begin");
   strip.begin();
+  strip.setBrightness(50);
   //Serial.println("Dopo begin");
   strip.show();
   //Serial.println("Dopo show");
@@ -189,12 +190,12 @@ void LEDApi::ledSetDenied() {
 
 void LEDApi::SlaveInit() {
   // Initialize SPI pins.
-  pinMode(SCK, INPUT);
+  /*pinMode(SCK, INPUT);
   pinMode(MOSI, INPUT);
   pinMode(SS, INPUT);
 
   // Enable SPI as slave.
-  SPCR = (1 << SPE);
+  SPCR = (1 << SPE);*/
 }
 
 byte LEDApi::SPItransfer(byte value) {

@@ -26,6 +26,8 @@ ISR (SPI_STC_vect)
 {
   byte c = SPDR;
 
+  //Serial.println("Ricevuto: " + String(c));
+
   if (c == 1)  // starting new sequence?
   {
     handshake = true;
@@ -37,7 +39,7 @@ ISR (SPI_STC_vect)
   {
     commandFromMaster = c;
     commandReceived = true;
-    SPDR = 1;   // send first byte
+    SPDR = c;   // send first byte
     return;
   }
 
@@ -45,7 +47,7 @@ ISR (SPI_STC_vect)
   {
     commandFromMaster = c;
     hoursFlag = true;
-    SPDR = 1;
+    SPDR = c;
     return;
   }
 
@@ -54,7 +56,7 @@ ISR (SPI_STC_vect)
     hoursFlag = false;
     hours = c;
     minutesFlag = true;
-    SPDR = 1;
+    SPDR = c;
     return;
   }
 
@@ -62,7 +64,7 @@ ISR (SPI_STC_vect)
   {
     minutesFlag = false;
     minutes = c;
-    SPDR = 1;
+    SPDR = c;
     commandReceived = true;
     return;
   }
@@ -74,7 +76,7 @@ ISR (SPI_STC_vect)
     else {
       commandFromMaster = c;
       commandReceived = true;
-      SPDR = 1;
+      SPDR = c;
       return;
     }
   }
@@ -83,6 +85,7 @@ ISR (SPI_STC_vect)
 void loop (void)
 {
   if (handshake && !handshakeDone) {
+    Serial.println("Handshake effettuato");
     handshakeDone = true;
     led.ledDefaultState();
     led.ledSetFree();
@@ -98,6 +101,9 @@ void loop (void)
           break;
         case 3:
           sessionTime = hours * 60.0 + minutes;
+          Serial.println("Ore = " + String(hours));
+          Serial.println("Minuti = " + String(minutes));
+          Serial.println("Durata sessione = " + String(sessionTime));
           led.ledSetBooked(sessionTime);
           break;
         case 4:
