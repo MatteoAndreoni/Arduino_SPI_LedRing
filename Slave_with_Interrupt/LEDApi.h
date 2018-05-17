@@ -1,6 +1,9 @@
 #ifndef LEDApi_h
 #define LEDApi_h
 
+bool sessionStillActive = false;
+bool ledAccessDeniedEffect = false;
+
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
   #include <avr/power.h>

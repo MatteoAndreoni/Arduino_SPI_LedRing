@@ -1,4 +1,16 @@
-// Slave
+#include "LEDApi.h"
+
+LEDApi led;
+bool handshake = false;
+bool handshakeDone = false;
+bool commandReceived = false;
+bool hoursFlag = false;
+bool minutesFlag = false;
+byte commandFromMaster;
+byte hours;
+byte minutes;
+
+
 
 void setup (void)
 {
@@ -6,49 +18,94 @@ void setup (void)
   pinMode(MISO, OUTPUT);
   SPCR |= bit(SPE);
   SPCR |= bit(SPIE);
+  led.initialize();
 }
-
-volatile char bufin[3] = {0};
-volatile char buf [] = {'4', '1', '1'};
-volatile int pos;
-volatile bool active;
-
-bool is_ready = false;
 
 ISR (SPI_STC_vect)
 {
   byte c = SPDR;
-  bufin[pos] = c;
-  if (c == '1')  // starting new sequence?
-    {
-    active = true;
-    pos = 0;
-    SPDR = buf [pos++];   // send first byte
+
+  if (c == 1)  // starting new sequence?
+  {
+    handshake = true;
+    SPDR = 1;   // send first byte
     return;
-    }
+  }
 
-  if (!active)
-    {
-    SPDR = 0;
+  if (c == 2)  // starting new sequence?
+  {
+    commandFromMaster = c;
+    commandReceived = true;
+    SPDR = 1;   // send first byte
     return;
+  }
+
+  if (c == 3)
+  {
+    commandFromMaster = c;
+    hoursFlag = true;
+    SPDR = 1;
+    return;
+  }
+
+  if (hoursFlag)
+  {
+    hoursFlag = false;
+    hours = c;
+    minutesFlag = true;
+    SPDR = 1;
+    return;
+  }
+
+  if (minutesFlag)
+  {
+    minutesFlag = false;
+    minutes = c;
+    SPDR = 1;
+    commandReceived = true;
+    return;
+  }
+
+  if (c == 4) {
+    if (led.sessionStillActive == true) {
+      led.ledAccessDeniedEffect = true;
     }
-
-  SPDR = buf [pos];
-  if (buf [pos] == 0 || ++pos >= sizeof (buf))
-    active = false;
-
-  if(pos >= 2){
-    is_ready = true;
+    else {
+      commandFromMaster = c;
+      commandReceived = true;
+      SPDR = 1;
+      return;
+    }
   }
 }
 
 void loop (void)
 {
-  if(is_ready){
-    Serial.print(bufin[0]);
-    Serial.print(bufin[1]);
-    Serial.print(bufin[2]);
-    Serial.println("");
-    is_ready = false;
+  if (handshake && !handshakeDone) {
+    handshakeDone = true;
+    led.ledDefaultState();
+    led.ledSetFree();
+  }
+  else {
+
+    if (commandReceived) {
+      commandReceived = false;
+
+      switch (commandFromMaster) {
+        case 2:
+          led.ledSetFree();
+          break;
+        case 3:
+          float sessionTime = hours * 60 + minutes;
+          led.ledSetBooked(sessionTime);
+          break;
+        case 4:
+          led.ledSetDenied();
+          led.ledSetFree();
+          break;
+        case 5:
+
+      }
+    }
   }
 }
