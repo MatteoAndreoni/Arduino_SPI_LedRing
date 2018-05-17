@@ -36,7 +36,7 @@ void loop (void)
     if (digitalRead (USER_INPUT)) {
       if (timeSessionStart == 0) {
         digitalWrite (SS, LOW);
-        SPI.transfer (4);
+        SPI.transfer (3);
         delayMicroseconds (15);
         SPI.transfer (hours);
         delayMicroseconds (15);
@@ -50,7 +50,7 @@ void loop (void)
       }
       else {
         digitalWrite (SS, LOW);
-        SPI.transfer (5);
+        SPI.transfer (4);
         delayMicroseconds (15);
         Serial.println ("Access denied: session already started");
         digitalWrite (SS, HIGH);
@@ -58,7 +58,7 @@ void loop (void)
     }
     if ((timeSessionStart != 0) && ((millis () - timeSessionStart) >= totalSessionMilliseconds)) {
       digitalWrite (SS, LOW);
-      SPI.transfer (3);
+      SPI.transfer (2);
       delayMicroseconds (15);
       digitalWrite (SS, HIGH);
       timeSessionStart = 0;
