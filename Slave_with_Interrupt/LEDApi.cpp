@@ -191,7 +191,6 @@ void LEDApi::SlaveInit() {
   // Initialize SPI pins.
   pinMode(SCK, INPUT);
   pinMode(MOSI, INPUT);
-  pinMode(MISO, INPUT);
   pinMode(SS, INPUT);
 
   // Enable SPI as slave.

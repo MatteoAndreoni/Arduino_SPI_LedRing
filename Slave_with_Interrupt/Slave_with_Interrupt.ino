@@ -9,6 +9,7 @@ bool minutesFlag = false;
 byte commandFromMaster;
 byte hours;
 byte minutes;
+float sessionTime;
 
 
 
@@ -96,15 +97,13 @@ void loop (void)
           led.ledSetFree();
           break;
         case 3:
-          float sessionTime = hours * 60 + minutes;
+          sessionTime = hours * 60.0 + minutes;
           led.ledSetBooked(sessionTime);
           break;
         case 4:
           led.ledSetDenied();
           led.ledSetFree();
           break;
-        case 5:
-
       }
     }
   }
