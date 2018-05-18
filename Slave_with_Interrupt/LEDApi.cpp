@@ -195,12 +195,6 @@ void LEDApi::SlaveInit() {
 
   // Enable SPI as slave.
   SPCR = (1 << SPE);
+   SPI.attachInterrupt();
 }
 
-byte LEDApi::SPItransfer(byte value) {
-  SPDR = value;
-
-  while (!(SPSR & (1 << SPIF)));
-  delay(20);
-  return SPDR;
-}

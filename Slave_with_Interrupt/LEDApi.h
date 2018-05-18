@@ -46,14 +46,7 @@ class LEDApi {
     void SlaveInit();
 
 
-    /**
-      @brief Funzione utilizzata per effettuare la trasmissione e la ricezione di un byte.
 
-      @param value Valore da inviare al dispositivo Master.
-
-      @return Valore ricevuto dal Master.
-    */
-    byte SPItransfer(byte value);
 
   private:
     /// Delay parziale per controllare eventuali input dal Master durante l'animazione dello scorrere del tempo.

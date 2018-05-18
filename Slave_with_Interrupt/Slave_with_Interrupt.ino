@@ -10,6 +10,7 @@ byte commandFromMaster;
 byte hours;
 byte minutes;
 float sessionTime;
+byte sessionByte = false;
 
 
 
@@ -20,32 +21,38 @@ void setup (void)
   SPCR |= bit(SPE);
   SPCR |= bit(SPIE);
   led.initialize();
+  Serial.println("started");
 }
 
 ISR (SPI_STC_vect)
 {
   byte c = SPDR;
+  /*if (c == 0)
+    return;
+  */
 
-  if (c == 1)  // starting new sequence?
+  if (c == 1 && !sessionByte)  // starting new sequence?
   {
     handshake = true;
-    SPDR = 1;   // send first byte
+    SPDR = c;   // send first byte
+    Serial.println("Sent 1 for hanshake");
     return;
   }
 
-  if (c == 2)  // starting new sequence?
+  if (c == 2 && !sessionByte)  // starting new sequence?
   {
     commandFromMaster = c;
     commandReceived = true;
-    SPDR = 1;   // send first byte
+    // SPDR = 1;   // send first byte
     return;
   }
 
-  if (c == 3)
+  if (c == 3  && !sessionByte)
   {
     commandFromMaster = c;
     hoursFlag = true;
-    SPDR = 1;
+    sessionByte = true;
+    // SPDR = 1;
     return;
   }
 
@@ -54,7 +61,7 @@ ISR (SPI_STC_vect)
     hoursFlag = false;
     hours = c;
     minutesFlag = true;
-    SPDR = 1;
+    // SPDR = 1;
     return;
   }
 
@@ -62,19 +69,20 @@ ISR (SPI_STC_vect)
   {
     minutesFlag = false;
     minutes = c;
-    SPDR = 1;
+    // SPDR = 1;
     commandReceived = true;
+    sessionByte = false;
     return;
   }
 
-  if (c == 4) {
+  if (c == 4  && !sessionByte) {
     if (led.sessionStillActive == true) {
       led.ledAccessDeniedEffect = true;
     }
     else {
       commandFromMaster = c;
       commandReceived = true;
-      SPDR = 1;
+      //   SPDR = 1;
       return;
     }
   }
@@ -84,6 +92,7 @@ void loop (void)
 {
   if (handshake && !handshakeDone) {
     handshakeDone = true;
+    Serial.println("Handshake done");
     led.ledDefaultState();
     led.ledSetFree();
   }
@@ -91,6 +100,8 @@ void loop (void)
 
     if (commandReceived) {
       commandReceived = false;
+      Serial.println("comando ricevuto dal master: " + String(commandFromMaster));
+
 
       switch (commandFromMaster) {
         case 2:
@@ -98,6 +109,8 @@ void loop (void)
           break;
         case 3:
           sessionTime = hours * 60.0 + minutes;
+          Serial.println("ore: " + String(hours));
+          Serial.println("minuti: " + String(minutes));
           led.ledSetBooked(sessionTime);
           break;
         case 4:
