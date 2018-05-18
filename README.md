@@ -5,7 +5,7 @@ Repository del progetto: https://github.com/MatteoAndreoni/Arduino_SPI_LedRing
 
 
 
-Video di dimostrazione: 
+Video di dimostrazione: https://drive.google.com/open?id=1DYDHnLbi_ftGu-24WwU7-srSZePhFnIc
 
 
 
