@@ -89,7 +89,7 @@ void LEDApi::ledSetBooked(float sessionTime) {
   // Effetto orologio:
 
   for (i = 0; i < strip.numPixels(); i++) {
-    strip.setPixelColor(i, strip.Color(0, 0, 63));
+    strip.setPixelColor(i, strip.Color(0, 0, 16));
   }
   strip.show();
 
@@ -98,7 +98,8 @@ void LEDApi::ledSetBooked(float sessionTime) {
   //Serial.println("ST = " + String(sessionTimeSeconds));
 
   uint8_t ledCount = 0;                                               // Contatore per tenere traccia del prossimo led da spegnere
-
+  strip.setPixelColor(0, strip.Color(0, 0, 128));
+        
   for (float index = 0; index <= (sessionTimeSeconds * 1000); index += ledDelay) {
     if (ledAccessDeniedEffect == true) {
       ledAccessDeniedEffect = false;
@@ -106,95 +107,97 @@ void LEDApi::ledSetBooked(float sessionTime) {
       index += 3800;                                              // L'effetto ledSetDenied viene eseguito in 3800 millisecondi in totale
       ledCount = index / (ledTime * 1000);
 
-      for (uint8_t y = ledCount; y < strip.numPixels(); y++)
-        strip.setPixelColor(y, strip.Color(0, 0, 63));
-      strip.show();
-    }
-
-    if (index >= (ledTime * (ledCount + 1) * 1000)) {                 // Controllo se il led numero ledCount deve essere spento
-
-      Serial.println("Ho spento il led " + String(ledCount) + " al tempo " + String(index));
-
-      for (uint8_t w = 0; w <= ledCount; w++)
-        strip.setPixelColor(w, strip.Color(0, 0, 0));
-
-      ledCount++;
-      for (uint8_t w = ledCount; w < strip.numPixels(); w++)
-        strip.setPixelColor(w, strip.Color(0, 0, 63));
+      for (uint8_t y = 1; y < strip.numPixels(); y++)
+        strip.setPixelColor(y, strip.Color(0, 0, 16));
 
       strip.show();
     }
-    delay(ledDelay);
-  }
-  /*strip.setPixelColor(ledCount, 0);
-    strip.show();
-  */
-  for (k = 0; k < 3; k++) {                                       // Per tre volte accende e spegne in dissolvenza i led, in colore giallo
-    for (j = 0; j < 63; j++) {
-      for (i = 0; i < strip.numPixels(); i++) {
-        strip.setPixelColor(i, strip.Color(j, j, 0));
+      if (index >= (ledTime * (ledCount + 1) * 1000)) {                 // Controllo se il led numero ledCount deve essere spento
+
+        Serial.println("Ho spento il led " + String(ledCount) + " al tempo " + String(index));
+
+        for (uint8_t w = 0; w <= ledCount; w++)
+          strip.setPixelColor(w, strip.Color(0, 0, 16));
+
+        strip.setPixelColor(++ledCount, strip.Color(0, 0, 128));
+
+        for (uint8_t w = ledCount + 1; w < strip.numPixels(); w++)
+          strip.setPixelColor(w, strip.Color(0, 0, 16));
+
+        strip.show();
       }
-      strip.show();
-      delay(10);
+      delay(ledDelay);
     }
-
-    for (j = 63; j > 0; j--) {
-      for (i = 0; i < strip.numPixels(); i++) {
-        strip.setPixelColor(i, strip.Color(j, j, 0));
-      }
+    /*strip.setPixelColor(ledCount, 0);
       strip.show();
-      delay(10);
-    }
-  }
-
-  for (i = 0; i < strip.numPixels(); i++)
-    strip.setPixelColor(i, 0);
-
-  strip.show();
-
-  for (uint16_t i = 0; i < strip.numPixels(); i++)
-    strip.setPixelColor(i, strip.Color(0, 0, 0));
-  strip.show();
-  sessionStillActive = false;
-}
-
-void LEDApi::ledSetDenied() {
-
-  uint32_t i, j, k;
-
-  for (k = 0; k < 3; k++) {
-    for (j = 0; j < 63; j++) {
-      for (i = 0; i < strip.numPixels(); i++) {
-        strip.setPixelColor(i, strip.Color(j, 0, 0));
+    */
+    for (k = 0; k < 3; k++) {                                       // Per tre volte accende e spegne in dissolvenza i led, in colore giallo
+      for (j = 0; j < 63; j++) {
+        for (i = 0; i < strip.numPixels(); i++) {
+          strip.setPixelColor(i, strip.Color(j, j, 0));
+        }
+        strip.show();
+        delay(10);
       }
-      strip.show();
-      delay(10);
-    }
 
-    for (j = 63; j > 0; j--) {
-      for (i = 0; i < strip.numPixels(); i++) {
-        strip.setPixelColor(i, strip.Color(j, 0, 0));
+      for (j = 63; j > 0; j--) {
+        for (i = 0; i < strip.numPixels(); i++) {
+          strip.setPixelColor(i, strip.Color(j, j, 0));
+        }
+        strip.show();
+        delay(10);
       }
-      strip.show();
-      delay(10);
     }
 
     for (i = 0; i < strip.numPixels(); i++)
       strip.setPixelColor(i, 0);
 
     strip.show();
+
+    for (uint16_t i = 0; i < strip.numPixels(); i++)
+      strip.setPixelColor(i, strip.Color(0, 0, 0));
+    strip.show();
+    sessionStillActive = false;
   }
 
-}
 
-void LEDApi::SlaveInit() {
-  // Initialize SPI pins.
-  pinMode(SCK, INPUT);
-  pinMode(MOSI, INPUT);
-  pinMode(SS, INPUT);
+  void LEDApi::ledSetDenied() {
 
-  // Enable SPI as slave.
-  SPCR = (1 << SPE);
-   SPI.attachInterrupt();
-}
+    uint32_t i, j, k;
+
+    for (k = 0; k < 3; k++) {
+      for (j = 0; j < 63; j++) {
+        for (i = 0; i < strip.numPixels(); i++) {
+          strip.setPixelColor(i, strip.Color(j, 0, 0));
+        }
+        strip.show();
+        delay(10);
+      }
+
+      for (j = 63; j > 0; j--) {
+        for (i = 0; i < strip.numPixels(); i++) {
+          strip.setPixelColor(i, strip.Color(j, 0, 0));
+        }
+        strip.show();
+        delay(10);
+      }
+
+      for (i = 0; i < strip.numPixels(); i++)
+        strip.setPixelColor(i, 0);
+
+      strip.show();
+    }
+
+  }
+
+  void LEDApi::SlaveInit() {
+    // Initialize SPI pins.
+    pinMode(SCK, INPUT);
+    pinMode(MOSI, INPUT);
+    pinMode(SS, INPUT);
+
+    // Enable SPI as slave.
+    SPCR = (1 << SPE);
+    SPI.attachInterrupt();
+  }
 
