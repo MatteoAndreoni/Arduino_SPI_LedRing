@@ -1,12 +1,33 @@
+/**
+ * @file Master_with_interrupt.ino
+ *
+ * @brief Codice Master che invia al dispositivo Slave gli effetti di luce da riprodurre
+ *
+ * @author Matteo Andreoni
+ * @author Filippo Nevi
+ */
+
 #include <SPI.h>
 
+/// Pin di lettura dell'input dell'utente
 #define USER_INPUT 5
 
+/// Flag per tenere traccia di handshake tra Master e Slave
 bool handshakeDone = false;
+
+/// Tempo ricavato dalla funzione millis() in cui è iniziata la sessione
 uint32_t timeDeskBooked;
+
+/// Byte rappresentante le ore di durata della sessione
 uint8_t hours = 0;
+
+/// Byte rappresentante i minuti di durata della sessione
 uint8_t minutes = 1;
+
+/// Durata totale della sessione calcolata in millisecondi
 uint32_t totalSessionMilliseconds;
+
+/// Byte in cui si viene salvata la risposta dello Slave ad alcuni comandi
 byte rx;
 
 void setup (void)
