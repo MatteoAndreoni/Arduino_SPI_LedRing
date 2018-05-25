@@ -13,7 +13,6 @@ float sessionTime;
 byte sessionByte = false;
 
 
-
 void setup (void)
 {
   Serial.begin(9600);
