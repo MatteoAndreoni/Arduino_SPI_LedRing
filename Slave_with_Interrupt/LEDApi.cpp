@@ -4,16 +4,16 @@ void LEDApi::initialize() {
 
 
   ledDelay = 200;
-  PIN = 6;
+  PIN = 8;
 
-  strip = Adafruit_NeoPixel(8, PIN, NEO_GRB + NEO_KHZ800);
+  strip = Adafruit_NeoPixel(12, PIN, NEO_GRB + NEO_KHZ800);
   SlaveInit();
 
   //Serial.println("Prima di begin");
   strip.begin();
-  strip.setBrightness(75);
+  //strip.setBrightness(75);
   //Serial.println("Dopo begin");
-  strip.show();
+  //strip.show();
   //Serial.println("Dopo show");
 }
 

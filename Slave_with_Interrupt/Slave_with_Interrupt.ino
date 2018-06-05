@@ -33,8 +33,7 @@ ISR (SPI_STC_vect)
   if (c == 1 && !sessionByte)  // starting new sequence?
   {
     handshake = true;
-    SPDR = c;   // send first byte
-    Serial.println("Sent 1 for hanshake");
+    SPDR = 1;   // send first byte
     return;
   }
 
